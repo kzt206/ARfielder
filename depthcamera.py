@@ -42,6 +42,26 @@ class Depthcamera():
         self.timenow = ""
 
     def getFrames(self):
+        #--------------
+        #temporal filter
+        profile = pipe.start(cfg)
+
+        frames = []
+        filteringFramesNo = 15
+        for x in range(filteringFramesNo):
+            frameset = pipe.wait_for_frames()
+            frames.append(frameset.get_depth_frame())
+
+        pipe.stop()
+        print("Frames Captured 2")
+
+        temporal = rs.temporal_filter()
+        for x in range(filteringFramesNo):
+            temp_filtered = temporal.process(frames[x])
+        colorized_depth = np.asanyarray(colorizer.colorize(temp_filtered).get_data())
+        #-------------------
+
+
         # フレーム待ち(Color & Depth)
         frames = self.pipeline.wait_for_frames()
         self.frameNo = frames.get_frame_number()
