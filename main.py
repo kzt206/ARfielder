@@ -97,7 +97,9 @@ def main():
             color_image = dCamera.getColorImage()
             depth_image = dCamera.getDepthImage()   #aligned
             hole_filled_image = dCamera.getHoleFilledImage()
-            filled_depth_values = dCamera.getHoleFilledValues() 
+            filled_depth_values = dCamera.getHoleFilledValues()
+            temporal_filter_image = dCamera.getTemporalFilterImage()
+            temporal_filter_values = dCamera.getTemporalFilterValues() 
 
             # Depth画像前処理(1m以内を画像化)  
             # clipping_distance = 1000 # [cm]
@@ -110,19 +112,23 @@ def main():
             #-----
             # targetPointHorizontal = 320
             # targetPointVertical = 240
-            #put Text Time and depth
+            #put Text Time ,depth and the frame number
             textTime=dCamera.getTimenow()
             textDepth="depth:" +str(filled_depth_values[targetPointVertical,targetPointHorizontal])+"[mm]"
             pointTime=(30,30)
             pointDepth=(targetPointHorizontal+10,targetPointVertical+5)
+            textFrameNo = "Frame:" + str(frameNo)
+            pointFrameNo=(30,90)  #Horizontal,Vertical
             font_face = cv2.FONT_HERSHEY_SIMPLEX
             font_scale = 0.6
             color = (0, 0, 255) # Blue, Green, Red
+            colorDepth = (0, 255, 0) # Blue, Green, Red
             thickness = 2
             line_type = cv2.LINE_8
             cv2.putText(color_image, textTime, pointTime, font_face, font_scale, color, thickness, line_type)
-            cv2.putText(color_image, textDepth, pointDepth, font_face, font_scale, color, thickness, line_type)
-            cv2.rectangle(color_image, (targetPointHorizontal-2,targetPointVertical-2), (targetPointHorizontal+2,targetPointVertical+2), color, thickness=-1)
+            cv2.putText(color_image, textDepth, pointDepth, font_face, font_scale, colorDepth, thickness, line_type)
+            cv2.rectangle(color_image, (targetPointHorizontal-2,targetPointVertical-2), (targetPointHorizontal+2,targetPointVertical+2), colorDepth, thickness=-1)
+            cv2.putText(color_image, textFrameNo, pointFrameNo, font_face, font_scale, color, thickness, line_type)
 
             #put Text of Step Frame
             textFrame="StepFrame:" + str(stepFrame)
@@ -198,6 +204,11 @@ def main():
             images4 = cv2.addWeighted(src1=color_image,alpha=0.5,src2=hole_filled_image,beta=0.5,gamma=0)
             cv2.namedWindow('Blended Image', cv2.WINDOW_AUTOSIZE)
             cv2.imshow('Blended Image', images4)
+
+            # temporal filter
+            cv2.namedWindow('Temporal filter Image', cv2.WINDOW_AUTOSIZE)
+            cv2.imshow('Temporal filter Image', temporal_filter_image)
+
 
             #time.sleep(1000)
             #print(dCamera.getFrameNo())

@@ -48,18 +48,7 @@ class Depthcamera():
         self.timenow = ""
 
     def getFrames(self):
-        #--------------
-        #temporal filter
-        frames = []
-        filteringFramesNo = 15
-        for x in range(filteringFramesNo):
-            frameset = self.pipeline.wait_for_frames()
-            frames.append(frameset.get_depth_frame())
         
-        for x in range(filteringFramesNo):
-            temp_filtered = self.temporal.process(frames[x])
-        temporal_filter_image = np.asanyarray(self.colorizer.colorize(temp_filtered).get_data())
-        #-------------------
 
 
         # フレーム待ち(Color & Depth)
@@ -80,7 +69,19 @@ class Depthcamera():
         # print(filled_depth_values[100,100])
         self.filled_depth_image = np.asanyarray(self.colorizer.colorize(filled_depth_frame).get_data())
 
-
+        #--------------
+        #temporal filter 
+        frames = []
+        filteringFramesNo = 15
+        for x in range(filteringFramesNo):
+            frameset = self.pipeline.wait_for_frames()
+            frames.append(frameset.get_depth_frame())
+        
+        for x in range(filteringFramesNo):
+            temp_filtered = self.temporal.process(frames[x])
+        self.temporal_filter_values = np.asanyarray(temp_filtered.get_data()) #get values [mm]
+        self.temporal_filter_image = np.asanyarray(self.colorizer.colorize(temp_filtered).get_data())
+        #-------------------
     ## ---------------
     #    Return numpy arrays
     ## ---------------
@@ -99,6 +100,14 @@ class Depthcamera():
     def getHoleFilledValues(self):
         #print("called getHoleFilledValues()")
         return self.filled_depth_values
+
+    def getTemporalFilterImage(self):
+        #print("called getHoleFilledValues()")
+        return self.temporal_filter_image
+
+    def getTemporalFilterValues(self):
+        #print("called getHoleFilledValues()")
+        return self.temporal_filter_values
 
     ## ---------------
     #    Return Frame Number
