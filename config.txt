@@ -1,4 +1,4 @@
-stepFrame,10
+stepFrame,1
 stepConfigChage,60
 targetPointHorizontal,320, #320
 targetPointVertical,240, #240

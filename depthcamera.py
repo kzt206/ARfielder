@@ -18,6 +18,12 @@ class Depthcamera():
 
         #
         self.colorizer = rs.colorizer()
+        
+        #temporal filter
+        self.temporal = rs.temporal_filter()
+
+        #hole filling filter
+        self.hole_filling = rs.hole_filling_filter()
 
         # ストリーミング開始
         self.pipeline = rs.pipeline()
@@ -44,21 +50,15 @@ class Depthcamera():
     def getFrames(self):
         #--------------
         #temporal filter
-        profile = pipe.start(cfg)
-
         frames = []
         filteringFramesNo = 15
         for x in range(filteringFramesNo):
-            frameset = pipe.wait_for_frames()
+            frameset = self.pipeline.wait_for_frames()
             frames.append(frameset.get_depth_frame())
-
-        pipe.stop()
-        print("Frames Captured 2")
-
-        temporal = rs.temporal_filter()
+        
         for x in range(filteringFramesNo):
-            temp_filtered = temporal.process(frames[x])
-        colorized_depth = np.asanyarray(colorizer.colorize(temp_filtered).get_data())
+            temp_filtered = self.temporal.process(frames[x])
+        temporal_filter_image = np.asanyarray(self.colorizer.colorize(temp_filtered).get_data())
         #-------------------
 
 
@@ -75,8 +75,7 @@ class Depthcamera():
         self.color_image = np.asanyarray(color_frame.get_data())
         self.depth_image = np.asanyarray(self.colorizer.colorize(depth_frame).get_data())
         #hole filter
-        hole_filling = rs.hole_filling_filter()
-        filled_depth_frame = hole_filling.process(depth_frame)
+        filled_depth_frame = self.hole_filling.process(depth_frame)
         self.filled_depth_values = np.asanyarray(filled_depth_frame.get_data()) #get values [mm]
         # print(filled_depth_values[100,100])
         self.filled_depth_image = np.asanyarray(self.colorizer.colorize(filled_depth_frame).get_data())
