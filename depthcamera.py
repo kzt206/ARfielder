@@ -23,6 +23,10 @@ class Depthcamera():
         self.pipeline = rs.pipeline()
         profile = self.pipeline.start(config)
 
+        # Skip 5 first frames to give the Auto-Exposure time to adjust
+        for x in range(5):
+            self.pipeline.wait_for_frames()
+
         #get device information
         depth_sensor = profile.get_device().first_depth_sensor(); #print("depth sensor:",depth_sensor)
         self.depth_scale = depth_sensor.get_depth_scale(); #print("depth scale:",depth_scale)
