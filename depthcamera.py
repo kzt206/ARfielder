@@ -70,7 +70,7 @@ class Depthcamera():
         self.filled_depth_image = np.asanyarray(self.colorizer.colorize(filled_depth_frame).get_data())
 
         #--------------
-        #temporal filter 
+        #temporal filter and hole filter
         frames = []
         filteringFramesNo = 15
         for x in range(filteringFramesNo):
@@ -79,6 +79,7 @@ class Depthcamera():
         
         for x in range(filteringFramesNo):
             temp_filtered = self.temporal.process(frames[x])
+            temp_filtered = self.hole_filling.process(temp_filtered)
         self.temporal_filter_values = np.asanyarray(temp_filtered.get_data()) #get values [mm]
         self.temporal_filter_image = np.asanyarray(self.colorizer.colorize(temp_filtered).get_data())
         #-------------------

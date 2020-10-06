@@ -98,8 +98,8 @@ def main():
             depth_image = dCamera.getDepthImage()   #aligned
             hole_filled_image = dCamera.getHoleFilledImage()
             filled_depth_values = dCamera.getHoleFilledValues()
-            temporal_filter_image = dCamera.getTemporalFilterImage()
-            temporal_filter_values = dCamera.getTemporalFilterValues() 
+            temporal_filter_image = dCamera.getTemporalFilterImage() #temporal filter and hole filter
+            temporal_filter_values = dCamera.getTemporalFilterValues()
 
             # Depth画像前処理(1m以内を画像化)  
             # clipping_distance = 1000 # [cm]
@@ -206,8 +206,8 @@ def main():
             cv2.imshow('Blended Image', images4)
 
             # temporal filter
-            cv2.namedWindow('Temporal filter Image', cv2.WINDOW_AUTOSIZE)
-            cv2.imshow('Temporal filter Image', temporal_filter_image)
+            cv2.namedWindow('Temporal and hole filter Image', cv2.WINDOW_AUTOSIZE)
+            cv2.imshow('Temporal and hole filter Image', temporal_filter_image)
 
 
             #time.sleep(1000)
