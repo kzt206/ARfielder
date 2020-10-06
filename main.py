@@ -173,9 +173,14 @@ def main():
             #cont1 = axContour.contourf(filled_depth_values,cmap=newcmp,levels=levelmapColor) #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
             ###########
 
-            cont1 = axContour.contourf(filled_depth_values,cmap=colormaps[colorMapType],levels=levelmapColor) #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
+            # only hole filter
+            # cont1 = axContour.contourf(filled_depth_values,cmap=colormaps[colorMapType],levels=levelmapColor) #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
+            # cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
+            # axContour.contour(filled_depth_values,levels=levelmapContour)
+            # temporal filter hole filter
+            cont1 = axContour.contourf(temporal_filter_values,cmap=colormaps[colorMapType],levels=levelmapColor) #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
             cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
-            axContour.contour(filled_depth_values,levels=levelmapContour)
+            axContour.contour(temporal_filter_values,levels=levelmapContour)
             cbar.set_label('depth [mm]',size=12)
             # axContour.set_aspect(frameHeight/frameWidth)
             axContour.set_aspect('equal')
