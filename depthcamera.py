@@ -49,8 +49,6 @@ class Depthcamera():
 
     def getFrames(self):
         
-
-
         # フレーム待ち(Color & Depth)
         frames = self.pipeline.wait_for_frames()
         self.frameNo = frames.get_frame_number()
@@ -72,11 +70,11 @@ class Depthcamera():
         #--------------
         #temporal filter and hole filter
         frames = []
-        filteringFramesNo = 15
+        filteringFramesNo = 12
         for x in range(filteringFramesNo):
             frameset = self.pipeline.wait_for_frames()
-            frames.append(frameset.get_depth_frame())
-        
+            aligned_frameset = self.align.process(frameset)
+            frames.append(aligned_frameset.get_depth_frame())
         for x in range(filteringFramesNo):
             temp_filtered = self.temporal.process(frames[x])
             temp_filtered = self.hole_filling.process(temp_filtered)
