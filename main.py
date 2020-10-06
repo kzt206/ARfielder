@@ -179,17 +179,19 @@ def main():
             #----
             # レンダリング
             #----
-            # depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-            # images = np.hstack((color_image, depth_image))
-            # cv2.namedWindow('Align', cv2.WINDOW_AUTOSIZE)
-            # cv2.imshow('Align', images)
+            # cv2.WINDOW_AUTOSIZE：デフォルト。ウィンドウ固定表示
+            # cv2.WINDOW_NORMAL：ウィンドウのサイズを変更可能にする
+            depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+            images = np.hstack((color_image, depth_image))
+            cv2.namedWindow('Align', cv2.WINDOW_AUTOSIZE)
+            cv2.imshow('Align', images)
 
-            images2 = np.hstack((color_image, hole_filled_image))
-            cv2.namedWindow('Hole filled', cv2.WINDOW_AUTOSIZE)
-            cv2.imshow('Hole filled', images2)
+            # images2 = np.hstack((color_image, hole_filled_image))
+            # cv2.namedWindow('Hole filled', cv2.WINDOW_AUTOSIZE)
+            # cv2.imshow('Hole filled', images2)
 
             # images3 = np.hstack((contour_image))
-            cv2.namedWindow('Contour', cv2.WINDOW_AUTOSIZE)
+            cv2.namedWindow('Contour', cv2.WINDOW_NORMAL)
             cv2.imshow('Contour', coutour_image)
 
             # blended

@@ -7,7 +7,7 @@ frameCenterVertical,240, #center->240
 frameHeight,120, #120
 frameWidth,120,#120
 contourNear,600
-contourFar,2000
+contourFar,1000
 figsizeWidth,8
 figsizeHeight,7
 colorMapType,1, # ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
