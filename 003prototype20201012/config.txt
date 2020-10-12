@@ -1,0 +1,13 @@
+stepFrame,1
+stepConfigChage,10
+targetPointHorizontal,320, #320
+targetPointVertical,240, #240
+frameCenterHorizontal,320, #center->320
+frameCenterVertical,240, #center->240
+frameHeight,120, #120
+frameWidth,120,#120
+contourNear,900
+contourFar,1200
+figsizeWidth,8
+figsizeHeight,7
+colorMapType,0, # ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
