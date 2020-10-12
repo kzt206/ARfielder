@@ -165,9 +165,17 @@ def main():
             # near=600
             # far =1200
             axContour.set_title("Display Depth:"+str(contourNear)+" - "+str(contourFar)+" [cm]\n"+"cmap:"+colormaps[colorMapType])
-            levelmapColor = np.linspace(contourNear,contourFar,8)
-            bounds=np.linspace(contourNear,contourFar,8)
-            levelmapContour = np.linspace(contourNear,contourFar,8)
+            # levelmapColor = np.linspace(contourNear,contourFar,8)
+            contourArray1 = np.arange(contourNear-150,contourNear,50)
+            contourArray2 = np.arange(contourNear,contourFar,20)
+            contourArray3 = np.arange(contourFar,contourFar+150,50)
+            levelmapColor=np.append(contourArray1,contourArray2)
+            levelmapColor=np.append(levelmapColor,contourArray3)
+            # levelmapColor = np.arange(contourNear,contourFar,30)
+            # levelmapColor = [900,1100,1150,1200,1250,1300,1500]
+            # bounds=np.linspace(contourNear,contourFar,8)
+            # levelmapContour = np.linspace(contourNear,contourFar,8)
+            levelmapContour = levelmapColor
             #axContour.text(200,200,textTime)
             axContour.set_xlim([frameL,frameR])
             axContour.set_ylim([frameB,frameT])
@@ -187,7 +195,8 @@ def main():
             # cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
             # axContour.contour(filled_depth_values,levels=levelmapContour)
             # temporal filter hole filter
-            cont1 = axContour.contourf(temporal_filter_values,cmap=colormaps[colorMapType],levels=levelmapColor) #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
+            cont1 = axContour.contourf(temporal_filter_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
+            cont1.cmap.set_under('pink')
             cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
             axContour.contour(temporal_filter_values,levels=levelmapContour)
             cbar.set_label('depth [mm]',size=12)
