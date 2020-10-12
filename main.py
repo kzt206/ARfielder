@@ -144,7 +144,16 @@ def main():
             frameB = int(frameCenterVertical+frameHeight/2)
             frameL = int(frameCenterHorizontal-frameWidth/2)
             frameR = int(frameCenterHorizontal+frameWidth/2)
-            cv2.rectangle(color_image, (frameL,frameT), (frameR,frameB), color, thickness=1)
+            cv2.rectangle(color_image, (frameL,frameT), (frameR,frameB), color, thickness=2)
+
+            #put Grid
+            width = 640
+            height = 480
+            colorGrid = (120, 120, 120) # Blue, Green, Red
+            for i in range(0,width,50):
+                cv2.line(color_image,(0,i),(width,i),colorGrid)
+            for i in range(0,height,50):
+                cv2.line(color_image,(i,0),(i,height),colorGrid)
 
             #---------------------
             # contour
@@ -156,9 +165,9 @@ def main():
             # near=600
             # far =1200
             axContour.set_title("Display Depth:"+str(contourNear)+" - "+str(contourFar)+" [cm]\n"+"cmap:"+colormaps[colorMapType])
-            levelmapColor = np.linspace(contourNear,contourFar,20)
-            bounds=np.linspace(contourNear,contourFar,20)
-            levelmapContour = np.linspace(contourNear,contourFar,10)
+            levelmapColor = np.linspace(contourNear,contourFar,8)
+            bounds=np.linspace(contourNear,contourFar,8)
+            levelmapContour = np.linspace(contourNear,contourFar,8)
             #axContour.text(200,200,textTime)
             axContour.set_xlim([frameL,frameR])
             axContour.set_ylim([frameB,frameT])
@@ -185,17 +194,18 @@ def main():
             # axContour.set_aspect(frameHeight/frameWidth)
             axContour.set_aspect('equal')
             plt.savefig("tempFigure.png")
-            coutour_image = cv2.imread("tempFigure.png")
+            contour_image = cv2.imread("tempFigure.png")
 
             #----
             # レンダリング
             #----
             # cv2.WINDOW_AUTOSIZE：デフォルト。ウィンドウ固定表示
             # cv2.WINDOW_NORMAL：ウィンドウのサイズを変更可能にする
-            depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-            images = np.hstack((color_image, depth_image))
-            cv2.namedWindow('Align', cv2.WINDOW_AUTOSIZE)
-            cv2.imshow('Align', images)
+            # depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+            # images = np.hstack((color_image, depth_image))
+            #main_images = np.hstack((color_image,contour_image))
+            cv2.namedWindow('MainImages', cv2.WINDOW_AUTOSIZE)
+            cv2.imshow('MainImages', color_image)
 
             # images2 = np.hstack((color_image, hole_filled_image))
             # cv2.namedWindow('Hole filled', cv2.WINDOW_AUTOSIZE)
@@ -203,7 +213,7 @@ def main():
 
             # images3 = np.hstack((contour_image))
             cv2.namedWindow('Contour', cv2.WINDOW_NORMAL)
-            cv2.imshow('Contour', coutour_image)
+            cv2.imshow('Contour', contour_image)
 
             # blended
             images4 = cv2.addWeighted(src1=color_image,alpha=0.5,src2=hole_filled_image,beta=0.5,gamma=0)
