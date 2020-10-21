@@ -70,8 +70,20 @@ print("frameNos: ",frameNos)
 colorizer = rs.colorizer()
 colorized_depth = np.asanyarray(colorizer.colorize(depth_frame).get_data())
 
-plt.title("aligned depth frame, Frame No: " + str(frameNo))
-plt.rcParams["axes.grid"] = False
-plt.rcParams['figure.figsize'] = [8, 4]
-plt.imshow(colorized_depth)
+fig1 = plt.figure()
+ax1 = fig1.add_subplot()
+ax1.set_title("aligned depth frame, Frame No: " + str(frameNo))
+# ax1.set_rcParams["axes.grid"] = False
+# ax1.set_rcParams['figure.figsize'] = [8, 4]
+ax1.imshow(colorized_depth)
+
+
+colorized_depth2 = np.asanyarray(colorizer.colorize(frames[0]).get_data())
+fig2 = plt.figure()
+ax2 = fig2.add_subplot()
+ax2.set_title("hole filtered depth 0, Frame No: " + str(frameNos[0]))
+# ax1.set_rcParams["axes.grid"] = False
+# ax1.set_rcParams['figure.figsize'] = [8, 4]
+ax2.imshow(colorized_depth2)
+
 plt.show()
