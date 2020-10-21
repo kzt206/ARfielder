@@ -166,9 +166,9 @@ def main():
             # far =1200
             axContour.set_title("Display Depth:"+str(contourNear)+" - "+str(contourFar)+" [cm]\n"+"cmap:"+colormaps[colorMapType])
             # levelmapColor = np.linspace(contourNear,contourFar,8)
-            contourArray1 = np.arange(contourNear-150,contourNear,50)
-            contourArray2 = np.arange(contourNear,contourFar,20)
-            contourArray3 = np.arange(contourFar,contourFar+150,50)
+            contourArray1 = np.arange(contourNear-150,contourNear,80)  # pitch mm
+            contourArray2 = np.arange(contourNear,contourFar,40)  #pitch mm
+            contourArray3 = np.arange(contourFar,contourFar+150,80) #pitch mm
             levelmapColor=np.append(contourArray1,contourArray2)
             levelmapColor=np.append(levelmapColor,contourArray3)
             # levelmapColor = np.arange(contourNear,contourFar,30)
