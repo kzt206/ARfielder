@@ -50,8 +50,9 @@ print("Color and depth Frames Captured")
 frames = []
 frameNos = []
 hole_filling = rs.hole_filling_filter()
+filteringNo = 10
 
-for x in range(10):
+for x in range(filteringNo):
     frameset = pipe.wait_for_frames()
     aligned_frameset = align.process(frameset)
     frameNos.append(frameset.get_frame_number())
