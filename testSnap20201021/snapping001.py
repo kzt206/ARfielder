@@ -50,7 +50,7 @@ print("Color and depth Frames Captured")
 frames = []
 frameNos = []
 hole_filling = rs.hole_filling_filter()
-filteringNo = 10
+filteringNo = 15
 
 for x in range(filteringNo):
     frameset = pipe.wait_for_frames()
@@ -79,12 +79,15 @@ ax1.set_title("aligned depth frame, Frame No: " + str(frameNo))
 ax1.imshow(colorized_depth)
 
 # hole filtered dapth frames
-colorized_depth2 = np.asanyarray(colorizer.colorize(frames[0]).get_data())
-fig2 = plt.figure()
-ax2 = fig2.add_subplot()
-ax2.set_title("hole filtered depth 0, Frame No: " + str(frameNos[0]))
-# ax1.set_rcParams["axes.grid"] = False
-# ax1.set_rcParams['figure.figsize'] = [8, 4]
-ax2.imshow(colorized_depth2)
+fig2= plt.figure(figsize=(16,12))
+for i in range(int(filteringNo/5)):
+    for j in range(5):
+        # print("i,j",i,j)
+        colorized_depth2 = np.asanyarray(colorizer.colorize(frames[i*5+j]).get_data())
+        ax2 = fig2.add_subplot(int(filteringNo/5),5,i*5+j+1)
+        ax2.set_title("hole filtered depth 0, Frame No: " + str(frameNos[i*5+j]))
+        # ax1.set_rcParams["axes.grid"] = False
+        # ax1.set_rcParams['figure.figsize'] = [8, 4]
+        ax2.imshow(colorized_depth2)
 
 plt.show()
