@@ -4,8 +4,8 @@ targetPointHorizontal,320, #320
 targetPointVertical,240, #240
 frameCenterHorizontal,320, #center->320
 frameCenterVertical,240, #center->240
-frameHeight,200, #120
-frameWidth,200,#120
+frameHeight,240, #120
+frameWidth,240,#120
 contourNear,1150
 contourFar,1300
 figsizeWidth,8

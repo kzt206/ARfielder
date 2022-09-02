@@ -196,6 +196,12 @@ def main():
             # axContour.contour(filled_depth_values,levels=levelmapContour)
             # temporal filter hole filter
             cont1 = axContour.contourf(temporal_filter_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
+            
+            # print("gradient")
+            (u,v)=np.gradient(temporal_filter_values)
+            # print("u",u)
+            # print("v",v)
+
             cont1.cmap.set_under('pink')
             cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
             axContour.contour(temporal_filter_values,levels=levelmapContour)
