@@ -2,11 +2,11 @@ stepFrame,1
 stepConfigChage,2
 targetPointHorizontal,320, #320
 targetPointVertical,240, #240
-frameCenterHorizontal,320, #center->320
-frameCenterVertical,240, #center->240
-frameHeight,120, #120
+frameCenterHorizontal,360, #center->320
+frameCenterVertical,290, #center->240
+frameHeight,200, #120
 frameWidth,120,#120
-contourNear,800
+contourNear,1150
 contourFar,1300
 figsizeWidth,8
 figsizeHeight,7
