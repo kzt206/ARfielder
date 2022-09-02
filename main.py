@@ -140,10 +140,10 @@ def main():
             # frameCenterVertical = 240
             # frameHeight = 120
             # frameWidth = 120
-            frameT = int(frameCenterVertical-frameHeight/2)
-            frameB = int(frameCenterVertical+frameHeight/2)
-            frameL = int(frameCenterHorizontal-frameWidth/2)
-            frameR = int(frameCenterHorizontal+frameWidth/2)
+            frameT = int(frameCenterVertical-frameHeight/2) #Top
+            frameB = int(frameCenterVertical+frameHeight/2) #Bottom
+            frameL = int(frameCenterHorizontal-frameWidth/2) #Left
+            frameR = int(frameCenterHorizontal+frameWidth/2) #Right
             cv2.rectangle(color_image, (frameL,frameT), (frameR,frameB), color, thickness=2)
 
             #put Grid

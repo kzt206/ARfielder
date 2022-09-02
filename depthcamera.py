@@ -121,6 +121,6 @@ class Depthcamera():
         self.pipeline.stop()
 
     def getTimenow(self):
-        self.timenow :str = datetime.now().strftime( "%Y-%d-%m-%H-%M-%S.%f" ) 
+        self.timenow :str = datetime.now().strftime( "%Y-%m-%d-%H-%M-%S.%f" ) 
         #print("in Depthcamera:",self.timenow)
         return self.timenow
