@@ -205,9 +205,14 @@ def main():
             #ベクトルの描画
             # print("gradient")
             (u,v)=np.gradient(temporal_filter_values)
-            # print("u",u)
-            # print("v",v)
-            plt.quiver(u,v)
+            print("frameL:%d, frameR:%d, frameT:%d, frameB:%d です" % (frameL,frameR,frameB,frameT))
+            # print("u",u[frameL:frameR])
+            # print("v",v[frameB:frameT])
+            # u[:frameL]=0
+            # u[frameR:]=0
+            # v[:frameB]=0
+            # v[frameT:]=0
+            plt.quiver(u,v,angles='xy', scale_units='xy',scale=10)
             # print(temporal_filter_values.shape)
 
             cont1.cmap.set_under('pink')

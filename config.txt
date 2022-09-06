@@ -4,10 +4,10 @@ targetPointHorizontal,320, #320
 targetPointVertical,240, #240
 frameCenterHorizontal,320, #center->320
 frameCenterVertical,240, #center->240
-frameHeight,120, #120
-frameWidth,120,#120
+frameHeight,100, #120
+frameWidth,100,#120
 contourNear,450
-contourFar,550
+contourFar,750
 figsizeWidth,8
 figsizeHeight,7
 colorMapType,5, # ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
