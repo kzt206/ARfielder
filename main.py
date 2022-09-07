@@ -28,6 +28,8 @@ figsizeHeight = 6
 
 colorMapType = 0
 
+q_scale=1
+
 figureContour = plt.figure(figsize=(figsizeWidth,figsizeHeight))
 
 #Configuration Update
@@ -60,6 +62,7 @@ def configLoad():
     figsizeWidth = configDic['figsizeWidth']
     figsizeHeight = configDic['figsizeHeight']
     colorMapType = configDic['colorMapType']
+    q_scale = configDic['q_scale']
 
 def main():
     dCamera = depthcamera.Depthcamera()
@@ -74,8 +77,8 @@ def main():
 
     colormaps = ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
 
-    # x=np.arange(0,640)
-    # y=np.arange(0,480)
+    x=np.arange(0,640)
+    y=np.arange(0,480)
 
 
     #Begin Rendering
@@ -144,8 +147,8 @@ def main():
             # frameCenterVertical = 240
             # frameHeight = 120
             # frameWidth = 120
-            frameT = int(frameCenterVertical-frameHeight/2) #Top
-            frameB = int(frameCenterVertical+frameHeight/2) #Bottom
+            frameT = int(frameCenterVertical+frameHeight/2) #Top
+            frameB = int(frameCenterVertical-frameHeight/2) #Bottom
             frameL = int(frameCenterHorizontal-frameWidth/2) #Left
             frameR = int(frameCenterHorizontal+frameWidth/2) #Right
             cv2.rectangle(color_image, (frameL,frameT), (frameR,frameB), color, thickness=2)
@@ -182,7 +185,7 @@ def main():
             levelmapContour = levelmapColor
             #axContour.text(200,200,textTime)
             axContour.set_xlim([frameL,frameR])
-            axContour.set_ylim([frameB,frameT])
+            axContour.set_ylim([frameT,frameB])
             #print(colormaps[colorMapType],colorMapType)
             
             ### colormap test ###
@@ -205,14 +208,36 @@ def main():
             #ベクトルの描画
             # print("gradient")
             (u,v)=np.gradient(temporal_filter_values)
-            print("frameL:%d, frameR:%d, frameT:%d, frameB:%d です" % (frameL,frameR,frameB,frameT))
+            print("frameL:%d, frameR:%d, frameB:%d, frameT:%d, temporal_filter_values:%s, u.shape:%s,v.shape:%s です" % (frameL,frameR,frameB,frameT,temporal_filter_values.shape,u.shape,v.shape)) 
+            #frameL:310, frameR:330, frameT:250, frameB:230, temporal_filter_values:(480, 640), u.shape:(480, 640),v.shape:(480, 640) です
+
             # print("u",u[frameL:frameR])
             # print("v",v[frameB:frameT])
-            # u[:frameL]=0
-            # u[frameR:]=0
-            # v[:frameB]=0
-            # v[frameT:]=0
-            plt.quiver(u,v,angles='xy', scale_units='xy',scale=10)
+            
+            # print(frameB)
+            print(u[frameB:frameT,frameL:frameR])
+            # print(u[237:242,317:322])
+
+            u[:frameB,:]=0
+            u[frameT:,:]=0
+            u[:,:frameL]=0
+            u[:,frameR:]=0
+
+            v[:frameB,:]=0
+            v[frameT:,:]=0
+            v[:,:frameL]=0
+            v[:,frameR:]=0
+            
+            u[u>10],v[v>10] = 10, 10    # 勾配の上限下限
+            u[u<-10],v[v<-10] = -10, -10    # 勾配の上限下限
+
+
+            print(u[frameB:frameT,frameL:frameR])
+            # print(u[237:242,317:322])
+
+            # plt.quiver(-v,-u)
+            plt.quiver(x,y,v,u,angles='xy',scale=200)  #近くが高くて、遠くが低いので -graident
+            # plt.quiver(x,y,-v,-u,angles='xy',scale=q_scale)
             # print(temporal_filter_values.shape)
 
             cont1.cmap.set_under('pink')
