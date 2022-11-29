@@ -236,7 +236,7 @@ def main():
             # print(u[237:242,317:322])
 
             # plt.quiver(-v,-u)
-            plt.quiver(x,y,v,u,angles='xy',scale=200)  #近くが高くて、遠くが低いので -graident
+            plt.quiver(x,y,v,u,angles='xy',scale=200)  #近くが高くて、遠くが低いので graident
             # plt.quiver(x,y,-v,-u,angles='xy',scale=q_scale)
             # print(temporal_filter_values.shape)
 
