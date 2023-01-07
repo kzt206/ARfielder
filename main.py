@@ -5,13 +5,18 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2
 
+#グラフ描画のためのライブラリ
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 
+#プロット領域をピクセル単位で指定するためのライブラリ
+from mpl_toolkits.axes_grid1 import Divider, Size # 追加
+from mpl_toolkits.axes_grid1.mpl_axes import Axes # 追加
+
 import time
 
-import depthcamera
+import depthcamera #独自のデプスカメラ用のライブラリ
 
 
 stepFrame = 0
@@ -28,10 +33,33 @@ figsizeHeight = 6
 
 colorMapType = 0
 
-figureContour = plt.figure(figsize=(figsizeWidth,figsizeHeight))
+#matplotlibの描画画面の宣言。これが、プロジェクトに投影される。
+# figureContour = plt.figure(figsize=(figsizeWidth,figsizeHeight))
+ax_w_px = 630  # プロット領域の幅をピクセル単位で指定   箱の幅630mm
+ax_h_px = 480  # プロット領域の高さをピクセル単位で指定 箱の高さ480mm
+
+# サイズ指定のための処理 ↓↓ ここから ↓↓ 
+fig_dpi = 100
+ax_w_inch = ax_w_px / fig_dpi
+ax_h_inch = ax_h_px / fig_dpi
+ax_margin_inch = (0.5, 0.5, 0.5, 0.5)  # Left,Top,Right,Bottom [inch]
+
+fig_w_inch = ax_w_inch + ax_margin_inch[0] + ax_margin_inch[2] 
+fig_h_inch = ax_h_inch + ax_margin_inch[1] + ax_margin_inch[3]
+
+figureContour = plt.figure( dpi=fig_dpi, figsize=(fig_w_inch, fig_h_inch))
+ax_p_w = [Size.Fixed(ax_margin_inch[0]),Size.Fixed(ax_w_inch)]
+ax_p_h = [Size.Fixed(ax_margin_inch[1]),Size.Fixed(ax_h_inch)]
+divider = Divider(figureContour, (0.0, 0.0, 1.0, 1.0), ax_p_w, ax_p_h, aspect=False)
+ax = Axes(figureContour, divider.get_position())
+ax.set_axes_locator(divider.new_locator(nx=1,ny=1))
+figureContour.add_axes(ax)
+# サイズ指定のための処理 ↑↑ ここまで ↑↑
 
 #Configuration Update
+#設定リストを読み込むメソッド
 def configLoad():
+    # global変数の宣言
     global stepFrame,stepConfigChage
     global targetPointHorizontal,targetPointVertical
     global frameCenterHorizontal,frameCenterVertical,frameHeight,frameWidth
@@ -39,26 +67,28 @@ def configLoad():
     global figsizeWidth,figsizeHeight
     global colorMapType
 
+    # 設定ファイルの中で、整数かどうかを判別するための辞書型リスト
     isIntDic={'stepFrame':True,'stepConfigChage':True,'targetPointHorizontal':True,'targetPointVertical':True,
                 'frameCenterHorizontal':True,'frameCenterVertical':True,'frameHeight':True,'frameWidth':True,
                 'contourNear':True,'contourFar':True,'figsizeWidth':True,'figsizeHeight':True,'colorMapType':True,
                 'isPause':True,'f':False,'num':True}
 
+    # ファイルを開いて読み込んで、辞書型リストにインプットする
     configDic = {}
     with open('config.txt', 'r') as configFile:
         for line in configFile:
             elements = line.split(',') 
-            if(isIntDic[elements[0]]):
-                configDic[elements[0]] = int(elements[1].replace("\n", ""))
+            if(isIntDic[elements[0]]): #整数かどうか判別
+                configDic[elements[0]] = int(elements[1].replace("\n", "")) #整数型の変数の読み込み。「改行記号」を除去
             else:
-                configDic[elements[0]] = float(elements[1].replace("\n", ""))
+                configDic[elements[0]] = float(elements[1].replace("\n", "")) #実数型の変数の読み込み。「改行記号」を除去
     print(configDic)
 
+    #読み込んだ設定を辞書型リストからglobal変数に代入
     stepFrame = configDic['stepFrame']
     stepConfigChage = configDic['stepConfigChage']
     targetPointHorizontal = configDic['targetPointHorizontal']
     targetPointVertical = configDic['targetPointVertical']
-    # targetPointVertical = configDic['targetPointVertical']
     frameCenterHorizontal= configDic['frameCenterHorizontal']
     frameCenterVertical= configDic['frameCenterVertical']
     frameHeight= configDic['frameHeight']
@@ -69,8 +99,9 @@ def configLoad():
     figsizeHeight = configDic['figsizeHeight']
     colorMapType = configDic['colorMapType']
 
+#メインとなるメソッド
 def main():
-    dCamera = depthcamera.Depthcamera()
+    dCamera = depthcamera.Depthcamera() #デプスカメラを操作するインスタンスの宣言
 
     #initial configuration load
     global stepFrame,stepConfigChage
@@ -83,6 +114,7 @@ def main():
     colormaps = ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
 
     #Begin Rendering
+    #レンダリングをする
     try:
         while True:
 
@@ -167,9 +199,19 @@ def main():
             # contour
             #---------------------
             plt.clf()
-            figureContour.set_figheight(figsizeHeight)
-            figureContour.set_figwidth(figsizeWidth)
-            axContour = figureContour.add_subplot()
+            # figureContour.set_figheight(figsizeHeight)
+            # figureContour.set_figwidth(figsizeWidth)
+            # axContour = figureContour.add_subplot()
+
+            # サイズ指定のための処理 ↓↓ ここから ↓↓ 
+            ax_p_w = [Size.Fixed(ax_margin_inch[0]),Size.Fixed(ax_w_inch)]
+            ax_p_h = [Size.Fixed(ax_margin_inch[1]),Size.Fixed(ax_h_inch)]
+            divider = Divider(figureContour, (0.0, 0.0, 1.0, 1.0), ax_p_w, ax_p_h, aspect=False)
+            axContour = Axes(figureContour, divider.get_position())
+            axContour.set_axes_locator(divider.new_locator(nx=1,ny=1))
+            figureContour.add_axes(axContour)
+            # サイズ指定のための処理 ↑↑ ここまで ↑↑
+
             # near=600
             # far =1200
             axContour.set_title("Display Depth:"+str(contourNear)+" - "+str(contourFar)+" [cm]\n"+"cmap:"+colormaps[colorMapType])
@@ -179,7 +221,7 @@ def main():
             contourArray3 = np.arange(contourFar,contourFar+40,5) #pitch mm
             levelmapColor=np.append(contourArray1,contourArray2)
             levelmapColor=np.append(levelmapColor,contourArray3) 
-            print(levelmapColor[:])
+            # print(levelmapColor[:])
             # levelmapColor = np.arange(contourNear,contourFar,30)
             # levelmapColor = [900,1100,1150,1200,1250,1300,1500]
             # bounds=np.linspace(contourNear,contourFar,8)
@@ -206,13 +248,14 @@ def main():
             # temporal filter hole filter
             cont1 = axContour.contourf(temporal_filter_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
             cont1.cmap.set_under('pink')
-            cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
+            # cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
             axContour.contour(temporal_filter_values,levels=levelmapContour)
-            cbar.set_label('depth [mm]',size=12)
+            # cbar.set_label('depth [mm]',size=12)
             # axContour.set_aspect(frameHeight/frameWidth)
-            axContour.set_aspect('equal')
+            # axContour.set_aspect('equal')
             plt.savefig("tempFigure.png")
-            contour_image = cv2.imread("tempFigure.png")
+            # plt.show()
+            contour_image = cv2.imread("tempFigure.png",1)
 
             #----
             # レンダリング
@@ -229,9 +272,16 @@ def main():
             # cv2.namedWindow('Hole filled', cv2.WINDOW_AUTOSIZE)
             # cv2.imshow('Hole filled', images2)
 
+            #コンター画像をopencvで表示。
             # images3 = np.hstack((contour_image))
-            cv2.namedWindow('Contour', cv2.WINDOW_NORMAL)
-            cv2.imshow('Contour', contour_image)
+            # cv2.namedWindow('forARsunaba_Contour', cv2.WINDOW_NORMAL)
+            # cv2.namedWindow('forARsunaba_Contour', cv2.WINDOW_KEEPRATIO)
+            #アスペクト比を保つために
+            #https://gist.github.com/kefir-/03cea3e3b17b7a74a7cdcf57a2159a79
+            cv2.namedWindow('forARsunaba_Contour', cv2.WINDOW_NORMAL)
+            ci_height, ci_width = contour_image.shape[:2]
+            cv2.resizeWindow('forARsunaba_Contour', ci_width, ci_height)
+            cv2.imshow('forARsunaba_Contour', contour_image)
 
             # blended
             images4 = cv2.addWeighted(src1=color_image,alpha=0.5,src2=hole_filled_image,beta=0.5,gamma=0)
