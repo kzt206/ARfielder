@@ -11,3 +11,6 @@ contourFar,1390
 figsizeWidth,9
 figsizeHeight,6
 colorMapType,5, # ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
+isPause,0, #1:True,0:False
+f,2.50,
+num,100,

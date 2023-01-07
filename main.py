@@ -39,18 +39,26 @@ def configLoad():
     global figsizeWidth,figsizeHeight
     global colorMapType
 
+    isIntDic={'stepFrame':True,'stepConfigChage':True,'targetPointHorizontal':True,'targetPointVertical':True,
+                'frameCenterHorizontal':True,'frameCenterVertical':True,'frameHeight':True,'frameWidth':True,
+                'contourNear':True,'contourFar':True,'figsizeWidth':True,'figsizeHeight':True,'colorMapType':True,
+                'isPause':True,'f':False,'num':True}
+
     configDic = {}
     with open('config.txt', 'r') as configFile:
         for line in configFile:
             elements = line.split(',') 
-            configDic[elements[0]] = int(elements[1])
+            if(isIntDic[elements[0]]):
+                configDic[elements[0]] = int(elements[1].replace("\n", ""))
+            else:
+                configDic[elements[0]] = float(elements[1].replace("\n", ""))
     print(configDic)
 
     stepFrame = configDic['stepFrame']
     stepConfigChage = configDic['stepConfigChage']
     targetPointHorizontal = configDic['targetPointHorizontal']
     targetPointVertical = configDic['targetPointVertical']
-    targetPointVertical = configDic['targetPointVertical']
+    # targetPointVertical = configDic['targetPointVertical']
     frameCenterHorizontal= configDic['frameCenterHorizontal']
     frameCenterVertical= configDic['frameCenterVertical']
     frameHeight= configDic['frameHeight']
@@ -231,8 +239,8 @@ def main():
             cv2.imshow('Blended Image', images4)
 
             # temporal filter
-            cv2.namedWindow('Temporal and hole filter Image', cv2.WINDOW_AUTOSIZE)
-            cv2.imshow('Temporal and hole filter Image', temporal_filter_image)
+            # cv2.namedWindow('Temporal and hole filter Image', cv2.WINDOW_AUTOSIZE)
+            # cv2.imshow('Temporal and hole filter Image', temporal_filter_image)
 
 
             #time.sleep(1000)
