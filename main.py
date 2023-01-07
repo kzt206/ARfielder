@@ -154,7 +154,8 @@ def main():
             # targetPointVertical = 240
             #put Text Time ,depth and the frame number
             textTime=dCamera.getTimenow()
-            textDepth="depth:" +str(filled_depth_values[targetPointVertical,targetPointHorizontal])+"[mm]"
+            # textDepth="depth:" +str(filled_depth_values[targetPointVertical,targetPointHorizontal])+"[mm]"
+            textDepth="depth:" +str(temporal_filter_values[targetPointVertical,targetPointHorizontal])+"[mm]"
             pointTime=(30,30)
             pointDepth=(targetPointHorizontal+10,targetPointVertical+5)
             textFrameNo = "Frame:" + str(frameNo)
@@ -247,9 +248,11 @@ def main():
             # axContour.contour(filled_depth_values,levels=levelmapContour)
             # temporal filter hole filter
             cont1 = axContour.contourf(temporal_filter_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
+            # cont1 = axContour.contourf(filled_depth_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
             cont1.cmap.set_under('pink')
             # cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
             axContour.contour(temporal_filter_values,levels=levelmapContour)
+            # axContour.contour(filled_depth_values,levels=levelmapContour)
             # cbar.set_label('depth [mm]',size=12)
             # axContour.set_aspect(frameHeight/frameWidth)
             # axContour.set_aspect('equal')
