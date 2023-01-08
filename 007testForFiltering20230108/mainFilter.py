@@ -18,7 +18,9 @@ import time
 
 import depthcamera #独自のデプスカメラ用のライブラリ
 
-
+##
+#初期設定（後ほど、設定ファイルを読み込むことで変更される）
+##
 stepFrame = 0
 stepConfigChage = 0
 targetPointHorizontal =0
@@ -38,6 +40,8 @@ colorMapType = 0
 ax_w_px = 630  # プロット領域の幅をピクセル単位で指定   箱の幅630mm
 ax_h_px = 480  # プロット領域の高さをピクセル単位で指定 箱の高さ480mm
 
+
+###########################################################
 # サイズ指定のための処理 ↓↓ ここから ↓↓ 
 fig_dpi = 100
 ax_w_inch = ax_w_px / fig_dpi
@@ -55,6 +59,7 @@ ax = Axes(figureContour, divider.get_position())
 ax.set_axes_locator(divider.new_locator(nx=1,ny=1))
 figureContour.add_axes(ax)
 # サイズ指定のための処理 ↑↑ ここまで ↑↑
+###########################################################
 
 #Configuration Update
 #設定リストを読み込むメソッド
@@ -85,19 +90,19 @@ def configLoad():
     print(configDic)
 
     #読み込んだ設定を辞書型リストからglobal変数に代入
-    stepFrame = configDic['stepFrame']
-    stepConfigChage = configDic['stepConfigChage']
-    targetPointHorizontal = configDic['targetPointHorizontal']
-    targetPointVertical = configDic['targetPointVertical']
-    frameCenterHorizontal= configDic['frameCenterHorizontal']
-    frameCenterVertical= configDic['frameCenterVertical']
-    frameHeight= configDic['frameHeight']
-    frameWidth= configDic['frameWidth']
-    contourNear = configDic['contourNear']
-    contourFar = configDic['contourFar']
-    figsizeWidth = configDic['figsizeWidth']
-    figsizeHeight = configDic['figsizeHeight']
-    colorMapType = configDic['colorMapType']
+    stepFrame = configDic['stepFrame'] #ステップのスキップ設定
+    stepConfigChage = configDic['stepConfigChage'] #
+    targetPointHorizontal = configDic['targetPointHorizontal'] #距離情報を取得するポイントの設定（横方向）
+    targetPointVertical = configDic['targetPointVertical'] #距離情報を取得するポイントの設定（縦方向）
+    frameCenterHorizontal= configDic['frameCenterHorizontal'] #プロジェクションに反映するフレームの中心位置の設定（横方向）
+    frameCenterVertical= configDic['frameCenterVertical'] #プロジェクションに反映するフレームの中心位置の設定（縦方向）
+    frameHeight= configDic['frameHeight'] #プロジェクションに反映するフレーム高さの設定
+    frameWidth= configDic['frameWidth'] #プロジェクションに反映するフレーム幅の設定
+    contourNear = configDic['contourNear'] #プロジェクション等高線等の手前側（高い方）距離の設定
+    contourFar = configDic['contourFar'] #プロジェクション等高線等の奥側（低い方）距離の設定
+    figsizeWidth = configDic['figsizeWidth'] #グラフの大きさ設定（横方向）　※非使用
+    figsizeHeight = configDic['figsizeHeight'] #グラフの大きさ設定（縦方向）　※非使用
+    colorMapType = configDic['colorMapType'] #高さ情報のカラーマップの設定
 
 #メインとなるメソッド
 def main():
@@ -129,33 +134,21 @@ def main():
             if frameNo % stepConfigChage == 0:
                 configLoad()
 
-            #print(frameNo)
-
             #------
             # get image from depth camera
             #------
             color_image = dCamera.getColorImage()
             depth_image = dCamera.getDepthImage()   #aligned
-            hole_filled_image = dCamera.getHoleFilledImage()
-            filled_depth_values = dCamera.getHoleFilledValues()
-            temporal_filter_image = dCamera.getTemporalFilterImage() #temporal filter and hole filter
-            temporal_filter_values = dCamera.getTemporalFilterValues()
 
-            # Depth画像前処理(1m以内を画像化)  
-            # clipping_distance = 1000 # [cm]
-            # grey_color = 153
-            # depth_image_3d = np.dstack((fille_depth_values,fille_depth_values,fille_depth_values))
-            # bg_removed = np.where((depth_image_3d > clipping_distance) | (depth_image_3d <= 0), grey_color, color_image)
-            
+            processed_image=dCamera.getProcessedImage()
+            processed_values=dCamera.getProcessedValues()
+
             #-----
             #put Target point distance 
             #-----
-            # targetPointHorizontal = 320
-            # targetPointVertical = 240
             #put Text Time ,depth and the frame number
             textTime=dCamera.getTimenow()
-            # textDepth="depth:" +str(filled_depth_values[targetPointVertical,targetPointHorizontal])+"[mm]"
-            textDepth="depth:" +str(temporal_filter_values[targetPointVertical,targetPointHorizontal])+"[mm]"
+            textDepth="depth:" +str(processed_values[targetPointVertical,targetPointHorizontal])+"[mm]"
             pointTime=(30,30)
             pointDepth=(targetPointHorizontal+10,targetPointVertical+5)
             textFrameNo = "Frame:" + str(frameNo)
@@ -177,10 +170,6 @@ def main():
             cv2.putText(color_image, textFrame, pointTextFrame, font_face, font_scale, color, thickness, line_type)
 
             #put Frame 1
-            # frameCenterHorizontal = 320
-            # frameCenterVertical = 240
-            # frameHeight = 120
-            # frameWidth = 120
             frameT = int(frameCenterVertical-frameHeight/2)
             frameB = int(frameCenterVertical+frameHeight/2)
             frameL = int(frameCenterHorizontal-frameWidth/2)
@@ -200,9 +189,6 @@ def main():
             # contour
             #---------------------
             plt.clf()
-            # figureContour.set_figheight(figsizeHeight)
-            # figureContour.set_figwidth(figsizeWidth)
-            # axContour = figureContour.add_subplot()
 
             # サイズ指定のための処理 ↓↓ ここから ↓↓ 
             ax_p_w = [Size.Fixed(ax_margin_inch[0]),Size.Fixed(ax_w_inch)]
@@ -216,22 +202,15 @@ def main():
             # near=600
             # far =1200
             axContour.set_title("Display Depth:"+str(contourNear)+" - "+str(contourFar)+" [cm]\n"+"cmap:"+colormaps[colorMapType])
-            # levelmapColor = np.linspace(contourNear,contourFar,8)
             contourArray1 = np.arange(contourNear-40,contourNear,5)  # pitch mm
             contourArray2 = np.arange(contourNear,contourFar,5)  #pitch mm
             contourArray3 = np.arange(contourFar,contourFar+40,5) #pitch mm
             levelmapColor=np.append(contourArray1,contourArray2)
             levelmapColor=np.append(levelmapColor,contourArray3) 
             # print(levelmapColor[:])
-            # levelmapColor = np.arange(contourNear,contourFar,30)
-            # levelmapColor = [900,1100,1150,1200,1250,1300,1500]
-            # bounds=np.linspace(contourNear,contourFar,8)
-            # levelmapContour = np.linspace(contourNear,contourFar,8)
             levelmapContour = levelmapColor
-            #axContour.text(200,200,textTime)
             axContour.set_xlim([frameL,frameR])
             axContour.set_ylim([frameB,frameT])
-            #print(colormaps[colorMapType],colorMapType)
             
             ### colormap test ###
             top = cm.get_cmap('Oranges_r', 128)
@@ -239,25 +218,16 @@ def main():
             newcolors = np.vstack((top(np.linspace(0, 1, 128)),
                        bottom(np.linspace(0, 1, 128))))
             newcmp = ListedColormap(newcolors, name='OrangeBlue')
-            #cont1 = axContour.contourf(filled_depth_values,cmap=newcmp,levels=levelmapColor) #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
             ###########
 
-            # only hole filter
-            # cont1 = axContour.contourf(filled_depth_values,cmap=colormaps[colorMapType],levels=levelmapColor) #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
-            # cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
-            # axContour.contour(filled_depth_values,levels=levelmapContour)
-            # temporal filter hole filter
-            cont1 = axContour.contourf(temporal_filter_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
-            # cont1 = axContour.contourf(filled_depth_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
+            cont1 = axContour.contourf(processed_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
             cont1.cmap.set_under('pink')
             # cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
-            axContour.contour(temporal_filter_values,levels=levelmapContour)
+            axContour.contour(processed_values,levels=levelmapContour)
             # axContour.contour(filled_depth_values,levels=levelmapContour)
             # cbar.set_label('depth [mm]',size=12)
-            # axContour.set_aspect(frameHeight/frameWidth)
             # axContour.set_aspect('equal')
             plt.savefig("tempFigure.png")
-            # plt.show()
             contour_image = cv2.imread("tempFigure.png",1)
 
             #----
@@ -266,19 +236,10 @@ def main():
             # cv2.WINDOW_AUTOSIZE：デフォルト。ウィンドウ固定表示
             # cv2.WINDOW_NORMAL：ウィンドウのサイズを変更可能にする
             # depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-            # images = np.hstack((color_image, depth_image))
-            #main_images = np.hstack((color_image,contour_image))
             cv2.namedWindow('MainImages', cv2.WINDOW_AUTOSIZE)
             cv2.imshow('MainImages', color_image)
 
-            # images2 = np.hstack((color_image, hole_filled_image))
-            # cv2.namedWindow('Hole filled', cv2.WINDOW_AUTOSIZE)
-            # cv2.imshow('Hole filled', images2)
-
             #コンター画像をopencvで表示。
-            # images3 = np.hstack((contour_image))
-            # cv2.namedWindow('forARsunaba_Contour', cv2.WINDOW_NORMAL)
-            # cv2.namedWindow('forARsunaba_Contour', cv2.WINDOW_KEEPRATIO)
             #アスペクト比を保つために
             #https://gist.github.com/kefir-/03cea3e3b17b7a74a7cdcf57a2159a79
             cv2.namedWindow('forARsunaba_Contour', cv2.WINDOW_NORMAL)
@@ -287,17 +248,11 @@ def main():
             cv2.imshow('forARsunaba_Contour', contour_image)
 
             # blended
-            images4 = cv2.addWeighted(src1=color_image,alpha=0.5,src2=hole_filled_image,beta=0.5,gamma=0)
+            images4 = cv2.addWeighted(src1=color_image,alpha=0.5,src2=processed_image,beta=0.5,gamma=0)
             cv2.namedWindow('Blended Image', cv2.WINDOW_AUTOSIZE)
             cv2.imshow('Blended Image', images4)
 
-            # temporal filter
-            # cv2.namedWindow('Temporal and hole filter Image', cv2.WINDOW_AUTOSIZE)
-            # cv2.imshow('Temporal and hole filter Image', temporal_filter_image)
-
-
             #time.sleep(1000)
-            #print(dCamera.getFrameNo())
 
             if cv2.waitKey(1) & 0xff == 27:  #27 = ESC
                 break
