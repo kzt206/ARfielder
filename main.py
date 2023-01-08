@@ -15,7 +15,6 @@ from mpl_toolkits.axes_grid1 import Divider, Size # 追加
 from mpl_toolkits.axes_grid1.mpl_axes import Axes # 追加
 
 import time
-
 import depthcamera #独自のデプスカメラ用のライブラリ
 
 ##
@@ -29,37 +28,9 @@ frameCenterHorizontal= 0
 frameCenterVertical= 0
 frameHeight= 0
 frameWidth= 0
-
 figsizeWidth = 6
 figsizeHeight = 6
-
 colorMapType = 0
-
-#matplotlibの描画画面の宣言。これが、プロジェクトに投影される。
-# figureContour = plt.figure(figsize=(figsizeWidth,figsizeHeight))
-ax_w_px = 630  # プロット領域の幅をピクセル単位で指定   箱の幅630mm
-ax_h_px = 480  # プロット領域の高さをピクセル単位で指定 箱の高さ480mm
-
-
-###########################################################
-# サイズ指定のための処理 ↓↓ ここから ↓↓ 
-fig_dpi = 100
-ax_w_inch = ax_w_px / fig_dpi
-ax_h_inch = ax_h_px / fig_dpi
-ax_margin_inch = (0.5, 0.5, 0.5, 0.5)  # Left,Top,Right,Bottom [inch]
-
-fig_w_inch = ax_w_inch + ax_margin_inch[0] + ax_margin_inch[2] 
-fig_h_inch = ax_h_inch + ax_margin_inch[1] + ax_margin_inch[3]
-
-figureContour = plt.figure( dpi=fig_dpi, figsize=(fig_w_inch, fig_h_inch))
-ax_p_w = [Size.Fixed(ax_margin_inch[0]),Size.Fixed(ax_w_inch)]
-ax_p_h = [Size.Fixed(ax_margin_inch[1]),Size.Fixed(ax_h_inch)]
-divider = Divider(figureContour, (0.0, 0.0, 1.0, 1.0), ax_p_w, ax_p_h, aspect=False)
-ax = Axes(figureContour, divider.get_position())
-ax.set_axes_locator(divider.new_locator(nx=1,ny=1))
-figureContour.add_axes(ax)
-# サイズ指定のための処理 ↑↑ ここまで ↑↑
-###########################################################
 
 #Configuration Update
 #設定リストを読み込むメソッド
@@ -69,16 +40,18 @@ def configLoad():
     global targetPointHorizontal,targetPointVertical
     global frameCenterHorizontal,frameCenterVertical,frameHeight,frameWidth
     global contourNear,contourFar,contourPitch
-    global figsizeWidth,figsizeHeight
+    global figsizeWidth,figsizeHeight,plotWidth,plotHeight
     global colorMapType
     global isPause,isContour,isFillcontour,isColorbar
+
 
     # 設定ファイルの中で、整数かどうかを判別するための辞書型リスト
     isIntDic={'isPause':True,'isContour':True,'isFillcontour':True,'isColorbar':True,
                 'stepFrame':True,'stepConfigChage':True,'targetPointHorizontal':True,'targetPointVertical':True,
                 'frameCenterHorizontal':True,'frameCenterVertical':True,'frameHeight':True,'frameWidth':True,
                 'contourNear':True,'contourFar':True,'contourPitch':True,
-                'figsizeWidth':True,'figsizeHeight':True,'colorMapType':True,
+                'figsizeWidth':True,'figsizeHeight':True,'plotWidth':True,'plotHeight':True,
+                'colorMapType':True,
                 'f':False,'num':True}
 
     # ファイルを開いて読み込んで、辞書型リストにインプットする
@@ -110,6 +83,8 @@ def configLoad():
     contourPitch = configDic['contourPitch'] #等高線のピッチ[mm]
     figsizeWidth = configDic['figsizeWidth'] #グラフの大きさ設定（横方向）　※非使用
     figsizeHeight = configDic['figsizeHeight'] #グラフの大きさ設定（縦方向）　※非使用
+    plotWidth = configDic['plotWidth'] #グラフのプロット領域の幅のピクセル値(630推奨) 630mmなので・・・
+    plotHeight = configDic['plotHeight'] #グラフのプロット領域の高さのピクセル値(480推奨) 480mmなので・・・
     colorMapType = configDic['colorMapType'] #高さ情報のカラーマップの設定
 
 #メインとなるメソッド
@@ -117,11 +92,6 @@ def main():
     dCamera = depthcamera.Depthcamera() #デプスカメラを操作するインスタンスの宣言
 
     #initial configuration load
-    global stepFrame,stepConfigChage
-    global targetPointHorizontal,targetPointVertical
-    global frameCenterHorizontal,frameCenterVertical,frameHeight,frameWidth
-    global figsizeWidth,figsizeHeight
-    global colorMapType
     configLoad()
 
     colormaps = ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
@@ -197,8 +167,19 @@ def main():
             # contour
             #---------------------
             plt.clf()
-
+            ###########################################################
             # サイズ指定のための処理 ↓↓ ここから ↓↓ 
+            fig_dpi = 100
+            ax_w_px=plotWidth
+            ax_h_px=plotHeight
+            ax_w_inch = ax_w_px / fig_dpi
+            ax_h_inch = ax_h_px / fig_dpi
+            ax_margin_inch = (0.5, 0.5, 1.5, 0.5)  # Left,Top,Right,Bottom [inch]
+
+            fig_w_inch = ax_w_inch + ax_margin_inch[0] + ax_margin_inch[2] 
+            fig_h_inch = ax_h_inch + ax_margin_inch[1] + ax_margin_inch[3]
+
+            figureContour = plt.figure( dpi=fig_dpi, figsize=(fig_w_inch, fig_h_inch))
             ax_p_w = [Size.Fixed(ax_margin_inch[0]),Size.Fixed(ax_w_inch)]
             ax_p_h = [Size.Fixed(ax_margin_inch[1]),Size.Fixed(ax_h_inch)]
             divider = Divider(figureContour, (0.0, 0.0, 1.0, 1.0), ax_p_w, ax_p_h, aspect=False)
@@ -206,6 +187,16 @@ def main():
             axContour.set_axes_locator(divider.new_locator(nx=1,ny=1))
             figureContour.add_axes(axContour)
             # サイズ指定のための処理 ↑↑ ここまで ↑↑
+            ###########################################################
+
+            # # サイズ指定のための処理 ↓↓ ここから ↓↓ 
+            # ax_p_w = [Size.Fixed(ax_margin_inch[0]),Size.Fixed(ax_w_inch)]
+            # ax_p_h = [Size.Fixed(ax_margin_inch[1]),Size.Fixed(ax_h_inch)]
+            # divider = Divider(figureContour, (0.0, 0.0, 1.0, 1.0), ax_p_w, ax_p_h, aspect=False)
+            # axContour = Axes(figureContour, divider.get_position())
+            # axContour.set_axes_locator(divider.new_locator(nx=1,ny=1))
+            # figureContour.add_axes(axContour)
+            # # サイズ指定のための処理 ↑↑ ここまで ↑↑
 
             # near=600
             # far =1200
