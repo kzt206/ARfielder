@@ -1,16 +1,20 @@
-stepFrame,1
-stepConfigChage,2
+isPause,0, # 1:True(pausing),0:False(not pausing=>running)
+isContour,1, # 1:True(line),0:False(no line)
+isFillcontour,1, # 1:True(filling),0:False(no color)
+isColorbar,1, # 1:True(with colorbar),0:False(no colorbar)
+stepFrame,30
+stepConfigChage,30
 targetPointHorizontal,320, #320
 targetPointVertical,240, #240
 frameCenterHorizontal,323, #center->320
 frameCenterVertical,205, #center->240
 frameHeight,125, #120 box480
 frameWidth,165,#120 box630
-contourNear,1250
-contourFar,1550
+contourNear,1350,
+contourFar,1550,  
+contourPitch,30,
 figsizeWidth,9
 figsizeHeight,6
 colorMapType,5, # ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
-isPause,0, #1:True,0:False
 f,2.50,
 num,100,

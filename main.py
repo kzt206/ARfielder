@@ -68,15 +68,18 @@ def configLoad():
     global stepFrame,stepConfigChage
     global targetPointHorizontal,targetPointVertical
     global frameCenterHorizontal,frameCenterVertical,frameHeight,frameWidth
-    global contourNear,contourFar
+    global contourNear,contourFar,contourPitch
     global figsizeWidth,figsizeHeight
     global colorMapType
+    global isPause,isContour,isFillcontour,isColorbar
 
     # 設定ファイルの中で、整数かどうかを判別するための辞書型リスト
-    isIntDic={'stepFrame':True,'stepConfigChage':True,'targetPointHorizontal':True,'targetPointVertical':True,
+    isIntDic={'isPause':True,'isContour':True,'isFillcontour':True,'isColorbar':True,
+                'stepFrame':True,'stepConfigChage':True,'targetPointHorizontal':True,'targetPointVertical':True,
                 'frameCenterHorizontal':True,'frameCenterVertical':True,'frameHeight':True,'frameWidth':True,
-                'contourNear':True,'contourFar':True,'figsizeWidth':True,'figsizeHeight':True,'colorMapType':True,
-                'isPause':True,'f':False,'num':True}
+                'contourNear':True,'contourFar':True,'contourPitch':True,
+                'figsizeWidth':True,'figsizeHeight':True,'colorMapType':True,
+                'f':False,'num':True}
 
     # ファイルを開いて読み込んで、辞書型リストにインプットする
     configDic = {}
@@ -90,6 +93,10 @@ def configLoad():
     print(configDic)
 
     #読み込んだ設定を辞書型リストからglobal変数に代入
+    isPause = configDic['isPause'] #砂場投影の一時停止
+    isContour = configDic['isContour'] #等高線の表示・非表示
+    isFillcontour = configDic['isFillcontour'] #塗りつぶしの表示・非表示
+    isColorbar = configDic['isColorbar'] #カラーバーの表示・非表示
     stepFrame = configDic['stepFrame'] #ステップのスキップ設定
     stepConfigChage = configDic['stepConfigChage'] #
     targetPointHorizontal = configDic['targetPointHorizontal'] #距離情報を取得するポイントの設定（横方向）
@@ -100,6 +107,7 @@ def configLoad():
     frameWidth= configDic['frameWidth'] #プロジェクションに反映するフレーム幅の設定
     contourNear = configDic['contourNear'] #プロジェクション等高線等の手前側（高い方）距離の設定
     contourFar = configDic['contourFar'] #プロジェクション等高線等の奥側（低い方）距離の設定
+    contourPitch = configDic['contourPitch'] #等高線のピッチ[mm]
     figsizeWidth = configDic['figsizeWidth'] #グラフの大きさ設定（横方向）　※非使用
     figsizeHeight = configDic['figsizeHeight'] #グラフの大きさ設定（縦方向）　※非使用
     colorMapType = configDic['colorMapType'] #高さ情報のカラーマップの設定
@@ -138,7 +146,7 @@ def main():
             # get image from depth camera
             #------
             color_image = dCamera.getColorImage()
-            depth_image = dCamera.getDepthImage()   #aligned
+            depth_image = dCamera.getDepthImage()   #aligned 画角補正後
 
             processed_image=dCamera.getProcessedImage()
             processed_values=dCamera.getProcessedValues()
@@ -202,31 +210,37 @@ def main():
             # near=600
             # far =1200
             axContour.set_title("Display Depth:"+str(contourNear)+" - "+str(contourFar)+" [cm]\n"+"cmap:"+colormaps[colorMapType])
-            contourArray1 = np.arange(contourNear-40,contourNear,5)  # pitch mm
-            contourArray2 = np.arange(contourNear,contourFar,5)  #pitch mm
-            contourArray3 = np.arange(contourFar,contourFar+40,5) #pitch mm
+
+            # コンターの設定開始
+            contourArray1 = np.arange(contourNear-40,contourNear,contourPitch)  # pitch mm
+            contourArray2 = np.arange(contourNear,contourFar,contourPitch)  #pitch mm
+            contourArray3 = np.arange(contourFar,contourFar+40,contourPitch) #pitch mm
             levelmapColor=np.append(contourArray1,contourArray2)
             levelmapColor=np.append(levelmapColor,contourArray3) 
             # print(levelmapColor[:])
             levelmapContour = levelmapColor
             axContour.set_xlim([frameL,frameR])
             axContour.set_ylim([frameB,frameT])
-            
-            ### colormap test ###
-            top = cm.get_cmap('Oranges_r', 128)
-            bottom = cm.get_cmap('Blues', 128)
-            newcolors = np.vstack((top(np.linspace(0, 1, 128)),
-                       bottom(np.linspace(0, 1, 128))))
-            newcmp = ListedColormap(newcolors, name='OrangeBlue')
-            ###########
+            # コンターの設定終了
 
-            cont1 = axContour.contourf(processed_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
-            cont1.cmap.set_under('pink')
-            # cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
-            axContour.contour(processed_values,levels=levelmapContour)
-            # axContour.contour(filled_depth_values,levels=levelmapContour)
-            # cbar.set_label('depth [mm]',size=12)
-            # axContour.set_aspect('equal')
+            #コンター塗りつぶしの表示
+            if isFillcontour:
+                cont1 = axContour.contourf(processed_values,cmap=colormaps[colorMapType],levels=levelmapColor,extend="both") #Color,levels=[0.75,0.8,0.85,0.9,0.95,1.,1.05]
+                cont1.cmap.set_under('pink')
+            
+            #等高線の色
+            contourColor='black'
+            #等高線の表示
+            if isContour:
+                axContour.contour(processed_values,levels=levelmapContour,colors=contourColor)
+            
+            ##カラーバーの表示・非表示
+            if isColorbar:
+                cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
+                cbar.set_label('depth [mm]',size=12)
+            
+            # axContour.set_aspect('equal') #アスペクト比の設定
+
             plt.savefig("tempFigure.png")
             contour_image = cv2.imread("tempFigure.png",1)
 
@@ -245,7 +259,10 @@ def main():
             cv2.namedWindow('forARsunaba_Contour', cv2.WINDOW_NORMAL)
             ci_height, ci_width = contour_image.shape[:2]
             cv2.resizeWindow('forARsunaba_Contour', ci_width, ci_height)
-            cv2.imshow('forARsunaba_Contour', contour_image)
+            if not isPause:
+                cv2.imshow('forARsunaba_Contour', contour_image)
+            else:
+                print("AR sunaba contour is pausing!")
 
             # blended
             images4 = cv2.addWeighted(src1=color_image,alpha=0.5,src2=processed_image,beta=0.5,gamma=0)
