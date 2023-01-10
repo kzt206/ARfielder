@@ -2,21 +2,21 @@ isPause,0, # 1:True(pausing),0:False(not pausing=>running)
 isContour,1, # 1:True(line),0:False(no line)
 isFillcontour,1, # 1:True(filling),0:False(no color)
 isColorbar,1, # 1:True(with colorbar),0:False(no colorbar)
-stepFrame,30, #30:replot every 1sec, 60:replot every 2sec 
+stepFrame,60, #30:replot every 1sec, 60:replot every 2sec 
 stepConfigChage,30
-targetPointHorizontal,320, #320
-targetPointVertical,240, #240
-frameCenterHorizontal,323, #center->320
+targetPointHorizontal,315, #320
+targetPointVertical,210, #240
+frameCenterHorizontal,302, #center->320
 frameCenterVertical,205, #center->240
 frameHeight,125, #120 box480
 frameWidth,165,#120 box630
-contourNear,1400,
-contourFar,1550,  
-contourPitch,20,
+contourNear,1250,
+contourFar,1400,  
+contourPitch,6,
 figsizeWidth,9
 figsizeHeight,6
 plotWidth,630,#630mm->630pixel
 plotHeight,480,#480mm->480pixel
-colorMapType,5, # ('jet_r','jet','prism','summer','terrain','terrain_r','ocean','ocean_r','gist_earth','gist_earth_r','rainbow','rainbow_r')
+colorMapType,5, # ('0:jet_r','1:jet','2:prism','3:summer','4:terrain','5:terrain_r','6:ocean','7:ocean_r','8:gist_earth','9:gist_earth_r','10:rainbow','11:rainbow_r')
 f,2.50,
 num,100,

@@ -188,18 +188,8 @@ def main():
             figureContour.add_axes(axContour)
             # サイズ指定のための処理 ↑↑ ここまで ↑↑
             ###########################################################
-
-            # # サイズ指定のための処理 ↓↓ ここから ↓↓ 
-            # ax_p_w = [Size.Fixed(ax_margin_inch[0]),Size.Fixed(ax_w_inch)]
-            # ax_p_h = [Size.Fixed(ax_margin_inch[1]),Size.Fixed(ax_h_inch)]
-            # divider = Divider(figureContour, (0.0, 0.0, 1.0, 1.0), ax_p_w, ax_p_h, aspect=False)
-            # axContour = Axes(figureContour, divider.get_position())
-            # axContour.set_axes_locator(divider.new_locator(nx=1,ny=1))
-            # figureContour.add_axes(axContour)
-            # # サイズ指定のための処理 ↑↑ ここまで ↑↑
-
-            # near=600
-            # far =1200
+            
+            
             axContour.set_title("Display Depth:"+str(contourNear)+" - "+str(contourFar)+" [cm]\n"+"cmap:"+colormaps[colorMapType])
 
             # コンターの設定開始
