@@ -42,11 +42,11 @@ def configLoad():
     global contourNear,contourFar,contourPitch
     global figsizeWidth,figsizeHeight,plotWidth,plotHeight
     global colorMapType
-    global isPause,isContour,isFillcontour,isColorbar
+    global isPause,isContour,isFillcontour,isColorbar,isYaxisInvert
 
 
     # 設定ファイルの中で、整数かどうかを判別するための辞書型リスト
-    isIntDic={'isPause':True,'isContour':True,'isFillcontour':True,'isColorbar':True,
+    isIntDic={'isPause':True,'isContour':True,'isFillcontour':True,'isColorbar':True,'isYaxisInvert':True,
                 'stepFrame':True,'stepConfigChage':True,'targetPointHorizontal':True,'targetPointVertical':True,
                 'frameCenterHorizontal':True,'frameCenterVertical':True,'frameHeight':True,'frameWidth':True,
                 'contourNear':True,'contourFar':True,'contourPitch':True,
@@ -70,6 +70,7 @@ def configLoad():
     isContour = configDic['isContour'] #等高線の表示・非表示
     isFillcontour = configDic['isFillcontour'] #塗りつぶしの表示・非表示
     isColorbar = configDic['isColorbar'] #カラーバーの表示・非表示
+    isYaxisInvert = configDic['isYaxisInvert'] #Y軸の反転の有無
     stepFrame = configDic['stepFrame'] #ステップのスキップ設定
     stepConfigChage = configDic['stepConfigChage'] #
     targetPointHorizontal = configDic['targetPointHorizontal'] #距離情報を取得するポイントの設定（横方向）
@@ -215,6 +216,10 @@ def main():
             if isContour:
                 axContour.contour(processed_values,levels=levelmapContour,colors=contourColor)
             
+            #y軸の反転
+            if isYaxisInvert:
+                axContour.invert_yaxis()
+
             ##カラーバーの表示・非表示
             if isColorbar:
                 cbar = figureContour.colorbar(cont1,orientation="vertical",format="%3.2f") # カラーバーの表示
